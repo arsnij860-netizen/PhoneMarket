@@ -27,7 +27,35 @@ else if(tab==='stock'){a.innerHTML=`<div class="pagehead">Мой склад</div
 else if(tab==='listings'){a.innerHTML=`<div class="pagehead">Мои объявления</div><div class="muted">Продажи происходят со временем. Цена влияет на спрос.</div>${s.listings.map(p=>phoneCard(p,'listing')).join('')||'<div class="empty">Пока нет объявлений. Выставь телефон со склада.</div>'}`}
 else {a.innerHTML=`<div class="pagehead">Бизнес-центр</div><div class="muted">Доставка, ремонт, сообщения и финансовая история.</div><div class="section">Заказы и доставка (${s.orders.length})</div>${s.orders.map(p=>`<div class="card"><b>📦 ${esc(p.model)}</b><p class="muted">${esc(p.delivery_method)} · осталось ${Math.max(0,p.delivery_left).toFixed(1)} игровых ч.</p><div class="progress"><div style="width:${Math.max(5,100-p.delivery_left/3*100)}%"></div></div></div>`).join('')||'<div class="muted">Активных доставок нет.</div>'}<div class="section">Ремонт (${s.phones.filter(p=>p.status==='Ремонт').length})</div>${s.phones.filter(p=>p.status==='Ремонт').map(p=>`<div class="card"><b>🛠 ${esc(p.model)}</b><p class="muted">${esc(p.repair_job.kind)} · осталось ${p.repair_job.left.toFixed(1)} ч.</p></div>`).join('')||'<div class="muted">Нет устройств в ремонте.</div>'}<div class="section">Сообщения (${s.messages.filter(m=>!m.answered).length} непрочитанных)</div>${s.messages.slice(0,10).map((m,i)=>`<div class="card"><b>${esc(m.from)}</b><p>${esc(m.text)}</p>${m.answered?`<div class="small">Ответ: ${esc(m.reply||'')}</div>`:`<div class="row"><button class="btn" onclick="answer(${i},'Здравствуйте! Да, актуально.')">Да, актуально</button><button class="btn secondary" onclick="answer(${i},'Цена окончательная.')">Цена окончательная</button></div>`}</div>`).join('')||'<div class="muted">Сообщений пока нет.</div>'}<div class="section">Финансы</div><div class="grid"><div class="statcard"><small>Выручка</small><strong>${money(s.deals.reduce((n,d)=>n+d.sale,0))}</strong></div><div class="statcard"><small>Прибыль от сделок</small><strong>${money(s.deals.reduce((n,d)=>n+d.profit,0))}</strong></div></div><div class="section">История операций</div>${s.transactions.slice(0,20).map(t=>`<div class="event"><b>${esc(t.kind)}</b> · ${esc(t.note)}<div class="small">${esc(t.time)} <span style="color:${t.amount<0?'var(--red)':'var(--green)'}">${t.amount>0?'+':''}${money(t.amount)}</span></div></div>`).join('')}<div class="section">Сохранение</div><button class="btn secondary full" onclick="save();msg('Прогресс сохранён на этом устройстве.')">Сохранить игру</button><button class="btn danger full" onclick="newGame()">Начать заново</button>`} }
 function renderMarketOnly(){let el=$('marketcards');if(!el)return;let arr=s.market.filter(p=>(p.model+' '+p.brand).toLowerCase().includes(filter.toLowerCase())&&(brand==='Все бренды'||p.brand===brand));arr.sort((x,y)=>sort==='Дешёвые'?x.price-y.price:sort==='Дорогие'?y.price-x.price:(x.price/x.market)-(y.price/y.market));el.innerHTML=arr.map(p=>phoneCard(p,'market')).join('')||'<div class="empty">Ничего не найдено</div>'}
-function go(t){tab=t;render()}function setSpeed(n){s.speed=n;save();msg(n===0?'Игровое время на паузе.':'Скорость времени: '+n+'×');render()}function changePrice(pid){let p=findPhone(pid),v=+$('price-'+pid).value;if(!p||v<1)return msg('Укажи корректную цену.',true);p.listed_price=v;p.listing_time=s.world_time;save();render()}function delist(pid){let p=findPhone(pid);if(p){p.status='Склад';p.listed_price=0;s.listings=s.listings.filter(x=>x.id!==pid);save();render()}}function diagnose(pid){let p=findPhone(pid);if(s.balance<150)return msg('Диагностика стоит 150 ₽. Недостаточно денег.',true);s.balance-=150;tx('Диагностика',-150,p.model);if(p.hidden_defect){let d=p.hidden_defect;p.hidden_defect=null;p.defects.push(d);if(d==='Экран разбит')p.screen='Разбит';if(d==='Не работает камера')p.camera='Неисправна';if(d==='Проблема с зарядкой')p.charging='Проблема';event(`Диагностика ${p.model}: обнаружено — ${d}.`);msg('Обнаружено: '+d)}else{event('Диагностика '+p.model+': новых неисправностей не найдено.');msg('Новых неисправностей не найдено.')}save();render()}
+function go(t){tab=t;render()}function setSpeed(n){s.speed=n;save();msg(n===0?'Игровое время на паузе.':'Скорость времени: '+n+'×');render()}function changePrice(pid){let p=findPhone(pid),v=+$('price-'+pid).value;if(!p||v<1)return msg('Укажи корректную цену.',true);p.listed_price=v;p.listing_time=s.world_time;save();render()}function delist(pid){let p=findPhone(pid);if(p){p.status='Склад';p.listed_price=0;s.listings=s.listings.filter(x=>x.id!==pid);save();render()}}function diagnose(pid){
+ let p=findPhone(pid);
+ if(!p)return;
+ if(s.balance<150)return msg('Диагностика стоит 150 ₽.\nНедостаточно денег.',true);
+ s.balance-=150;
+ tx('Диагностика',-150,p.model);
+ const found=new Set(Array.isArray(p.defects)?p.defects:[]);
+ if(p.hidden_defect){
+  found.add(p.hidden_defect);
+  p.hidden_defect=null;
+ }
+ if(p.battery<85)found.add('Изношенный аккумулятор');
+ if(p.screen==='Разбит')found.add('Экран разбит');
+ if(p.camera==='Неисправна')found.add('Не работает камера');
+ if(p.charging==='Проблема')found.add('Проблема с зарядкой');
+ p.defects=[...found];
+ if(p.defects.includes('Экран разбит'))p.screen='Разбит';
+ if(p.defects.includes('Не работает камера'))p.camera='Неисправна';
+ if(p.defects.includes('Проблема с зарядкой'))p.charging='Проблема';
+ if(p.defects.length){
+  event('Диагностика '+p.model+': '+p.defects.join(', ')+'.');
+  msg('Обнаруженные неисправности:\n\n'+p.defects.map(d=>'• '+d).join('\n'));
+ }else{
+  event('Диагностика '+p.model+': неисправностей не обнаружено.');
+  msg('Неисправностей не обнаружено.');
+ }
+ save();
+ render();
+}
 function repairPick(pid){let p=findPhone(pid),options=Object.keys(repairs).map(k=>`<button class="btn secondary full" onclick="closeModal();repair('${pid}','${k}')">${k} · ${money(repairs[k][0])}</button>`).join('');$('modalroot').innerHTML=`<div class="modalbg" onclick="if(event.target===this)closeModal()"><div class="modal"><h2>Ремонт · ${esc(p.model)}</h2><p class="muted">Выбери тип ремонта. Для ремонта нужна подтверждённая неисправность.</p>${options}<button class="btn full" onclick="closeModal()">Отмена</button></div></div>`}
 function answer(i,reply){let m=s.messages[i];if(!m)return;m.answered=true;m.reply=reply;if(reply.includes('Да'))s.rep=Math.min(5,+(s.rep+.01).toFixed(2));event('Ответ отправлен: «'+reply+'»');save();render()}function newGame(){ $('modalroot').innerHTML=`<div class="modalbg"><div class="modal"><h2>Начать заново?</h2><p>Весь текущий прогресс будет удалён.</p><div class="row"><button class="btn danger" onclick="s=initial();save();closeModal();go('home')">Да, начать</button><button class="btn secondary" onclick="closeModal()">Отмена</button></div></div></div>`}
 function renderMarketOnlySafe(){}
