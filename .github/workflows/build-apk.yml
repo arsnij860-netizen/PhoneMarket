@@ -1,5 +1,5 @@
 
-name: Build PhoneMarket APK
+name: Build PhoneMarket Release APK
 
 on:
   workflow_dispatch:
@@ -26,12 +26,12 @@ jobs:
         with:
           gradle-version: "8.9"
 
-      - name: Build debug APK
-        run: gradle assembleDebug
+      - name: Build Release APK
+        run: gradle assembleRelease
 
-      - name: Upload APK
+      - name: Upload Release APK
         uses: actions/upload-artifact@v4
         with:
-          name: PhoneMarket-APK
-          path: app/build/outputs/apk/debug/*.apk
+          name: PhoneMarket-Release-APK
+          path: app/build/outputs/apk/release/*.apk
           if-no-files-found: error
