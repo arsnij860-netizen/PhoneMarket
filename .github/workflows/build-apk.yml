@@ -1,14 +1,10 @@
-name: Build PhoneMarket APK
+name: Build PhoneMarket Release APK
 
 on:
   workflow_dispatch:
   push:
     branches:
-      - main
       - fix/phone-diagnostics
-  pull_request:
-    branches:
-      - main
 
 permissions:
   contents: read
@@ -16,6 +12,7 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -31,13 +28,28 @@ jobs:
         with:
           gradle-version: "8.9"
 
-      - name: Build debug APK
-        run: gradle assembleDebug
+      - name: Decode signing key
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+        run: |
+          test -n "$KEYSTORE_BASE64" || { echo "Missing KEYSTORE_BASE64 repository secret"; exit 1; }
+          echo "$KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/phone-market-key.jks"
 
-      - name: Upload debug APK
+      - name: Build signed Release APK
+        env:
+          STORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+        run: |
+          test -n "$STORE_PASSWORD" || { echo "Missing KEYSTORE_PASSWORD repository secret"; exit 1; }
+          gradle assembleRelease \
+            -Pandroid.injected.signing.store.file="$RUNNER_TEMP/phone-market-key.jks" \
+            -Pandroid.injected.signing.store.password="$STORE_PASSWORD" \
+            -Pandroid.injected.signing.key.alias=phonemarket \
+            -Pandroid.injected.signing.key.password="$STORE_PASSWORD"
+
+      - name: Upload Release APK
         uses: actions/upload-artifact@v4
         with:
-          name: PhoneMarket-Debug-APK
-          path: app/build/outputs/apk/debug/*.apk
+          name: PhoneMarket-Release-APK
+          path: app/build/outputs/apk/release/*.apk
           if-no-files-found: error
           retention-days: 14
