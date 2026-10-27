@@ -1,4 +1,3 @@
-
 plugins {
     id 'com.android.application'
 }
@@ -11,7 +10,7 @@ android {
         applicationId 'com.phonemarkettycoon.app'
         minSdk 23
         targetSdk 35
-        versionCode 2
+        versionCode 3
         versionName '1.0'
     }
 }
