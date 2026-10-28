@@ -69,6 +69,41 @@ button{transition:background-color .15s ease,filter .15s ease,transform .15s eas
 .btn:hover:not(:disabled){filter:brightness(.97);box-shadow:none}
 @media(min-width:600px){header{padding-left:max(16px,calc((100% - 850px)/2));padding-right:max(16px,calc((100% - 850px)/2))}}
 @media(prefers-color-scheme:dark){html,body{color-scheme:light}}
+
+/* Clean classifieds marketplace interface */
+:root{--bg:#f5f6f7;--panel:#fff;--panel2:#fff;--text:#202124;--muted:#747982;--blue:#1769aa;--green:#16845b;--red:#c43c4b;--line:#e5e7e9}
+html{background:#f5f6f7;color-scheme:light}
+body{background:#f5f6f7;color:#202124;font-family:Arial,system-ui,-apple-system,"Segoe UI",sans-serif;padding-bottom:88px}
+header{background:#fff;color:#202124;border-bottom:1px solid #e3e5e8;box-shadow:none;padding:13px 16px 12px}
+.brand{font-size:23px;font-weight:850;color:#202124;letter-spacing:-.8px}.brand span{color:#202124!important;background:none!important;-webkit-text-fill-color:initial!important}
+.sub{color:#767b83;letter-spacing:.5px}
+.topstats{gap:8px}.stat{background:#f7f8f9;border:1px solid #e9eaec;border-radius:10px;box-shadow:none}.stat small{color:#747982}.stat strong{color:#202124}
+.wrap{max-width:820px;padding:14px}
+.pagehead{color:#202124;font-size:24px;letter-spacing:-.45px}
+.muted,.small{color:#737780}
+.hero,.hero-game{background:#fff;border:1px solid #e5e7e9;color:#202124;border-radius:16px;box-shadow:none}
+.hero-game{background:linear-gradient(120deg,#fff7cf,#fffdf4);border-color:#f2e3a3}
+.hero-game .hero-kicker{color:#655a2a}.hero-game h2{color:#202124}.hero-game p{color:#5f6063}
+.hero-art{background:transparent}.hero-phone{background:linear-gradient(145deg,#fff,#e8edf3 60%,#d1dce7);border-color:#aab7c6;box-shadow:0 8px 20px #20212415;color:#27384a}
+.orbit{border-color:#d5c67a80}.orbit-two{border-color:#d5c67a55}
+.coin{box-shadow:0 3px 10px #20212416}.live-pill,.hero-rank{background:#fff;border-color:#e7dcae;color:#5f572d}
+.hero-progress{background:#fff;border-color:#f0e4b7}.hero-progress-label{color:#69685f}.hero-progress-label b{color:#202124}.hero-game .progress{background:#e8e9eb}.hero-game .progress div{background:#ffd335;box-shadow:none}
+.hero-primary,.btn{background:#1769aa;color:#fff;box-shadow:none}.hero-primary{background:#ffda47;color:#202124}.hero-secondary{background:#fff!important;color:#202124!important;border:1px solid #d9dce0!important}
+.quick-title{color:#747982}
+.statcard,.card{background:#fff;border:1px solid #e5e7e9;border-radius:12px;box-shadow:0 1px 2px #20212408}
+.statcard strong{color:#202124!important}
+.card{padding:14px}.phoneicon{background:#f1f3f5;border:1px solid #e2e5e8;box-shadow:none;color:#283746;border-radius:10px}
+.price{color:#16845b;text-shadow:none}.tag{background:#f1f5f8;color:#4d6172;border:1px solid #e6ebef;border-radius:6px}.tag.bad{background:#fff0f1;color:#a52e3c}
+.btn{border-radius:9px;padding:11px 13px;font-size:13px}.btn.secondary{background:#fff;color:#1769aa;border:1px solid #cbd9e5}.btn.danger{background:#fff0f1;color:#a52e3c;border:1px solid #f0c6cb}
+.field{background:#fff;color:#202124;border:1px solid #d9dce0;border-radius:10px;min-height:42px}.field:focus-visible{border-color:#1769aa;outline-color:#1769aa}
+.toolbar{gap:8px}.toolbar .field{min-height:44px}
+.nav{background:#fff;border-top:1px solid #e3e5e8;box-shadow:0 -2px 8px #20212408;padding-top:7px}
+.nav button{color:#6c7179;border-radius:10px;min-height:52px}.nav button.active{background:#fff4c4;color:#202124;box-shadow:inset 0 0 0 1px #f0dfa0}.nav .navbadge{border-color:#fff}
+.section{color:#202124}.event{border-color:#e9eaec}.notice{background:#e7f7ef;color:#176b4b}.notice.err{background:#fff0f1;color:#a52e3c}
+.chatline .avatar{background:#e9f2fb;color:#245b85}.bubble{background:#f7f8f9;border-color:#e1e4e8;color:#202124}.toast{background:#fff;color:#202124;border-color:#e0e3e7;box-shadow:0 8px 28px #20212418}.modalbg{background:#0006}.modal{background:#fff;color:#202124;border-color:#e3e5e8}.modal .muted{color:#747982}
+.btn:hover:not(:disabled){filter:brightness(.98);box-shadow:none}
+@media(min-width:600px){header{padding-left:max(16px,calc((100% - 820px)/2));padding-right:max(16px,calc((100% - 820px)/2))}}
+@media(prefers-color-scheme:dark){html,body{color-scheme:light}}
 </style></head><body>
 <header><div class="brand">📱 PhoneMarket <span>Tycoon</span></div><div class="sub">СИМУЛЯТОР ТЕЛЕФОННОГО БИЗНЕСА</div><div class="topstats"><div class="stat"><small>Баланс</small><strong id="balance">1 000 ₽</strong></div><div class="stat"><small>Уровень</small><strong id="level">1 · 0 XP</strong></div><div class="stat"><small>Репутация</small><strong id="rep">5.00 ★</strong></div><div class="stat"><small>Игровое время</small><strong id="clock">День 1, 00:00</strong></div></div></header>
 <main class="wrap" id="app"></main><nav class="nav" id="nav"></nav><div id="modalroot"></div><div id="toastroot" class="toast-stack" aria-live="polite"></div>
